@@ -1,0 +1,93 @@
+version: "3.7"
+
+x-minio-common: &minio-common
+  image: xenex/minio
+  command: server --address ':9000' --console-address ':9001' http://minio{01...06}:9000/export/data{01...02}
+  # CHANGE NETWORK HERE
+  networks:
+    - minio_net
+    - nginx_net
+  ports:
+    - 9000
+    - 9001
+  volumes:
+    # CHANGE VOLUME HERE
+    - /opt/minio/data01:/export/data01
+    - /opt/minio/data02:/export/data02
+  environment:
+    # CHANGE ENVIRONMENT HERE
+    - TZ=Asia/Bangkok
+    - MINIO_WAIT_FOR_SERVICE=10
+    - MINIO_ROOT_USER=admin
+    - MINIO_ROOT_PASSWORD=admin
+    - MINIO_ACCESS_KEY=accesskey
+    - MINIO_SECRET_KEY=secretkey
+    - MINIO_STORAGE_CLASS_RRS=EC:2
+
+networks:
+  # CHANGE NETWORK HERE
+  minio_net:
+    external: true
+  nginx_net:
+    external: true
+
+services:
+  minio01:
+    <<: *minio-common
+    hostname: minio01
+    deploy:
+      replicas: 1
+      placement:
+        # CHANGE CONSTRAINT HERE
+        constraints:
+          - node.hostname==host01
+
+  minio02:
+    <<: *minio-common
+    hostname: minio02
+    deploy:
+      replicas: 1
+      placement:
+        # CHANGE CONSTRAINT HERE
+        constraints:
+          - node.hostname==host02
+
+  minio03:
+    <<: *minio-common
+    hostname: minio03
+    deploy:
+      replicas: 1
+      placement:
+        # CHANGE CONSTRAINT HERE
+        constraints:
+          - node.hostname==host03
+
+  minio04:
+    <<: *minio-common
+    hostname: minio04
+    deploy:
+      replicas: 1
+      placement:
+        # CHANGE CONSTRAINT HERE
+        constraints:
+          - node.hostname==host04
+
+  minio05:
+    <<: *minio-common
+    hostname: minio05
+    deploy:
+      replicas: 1
+      placement:
+        # CHANGE CONSTRAINT HERE
+        constraints:
+          - node.hostname==host05
+
+  minio06:
+    <<: *minio-common
+    hostname: minio06
+    deploy:
+      replicas: 1
+      placement:
+        # CHANGE CONSTRAINT HERE
+        constraints:
+          - node.hostname==host06
